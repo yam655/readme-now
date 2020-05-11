@@ -1,0 +1,217 @@
+#!/usr/bin/env python3
+
+from pathlib import Path
+import argparse
+
+
+MAX_TITLE_LENGTH = 40
+VERSION = "0.9.0"
+
+parser = argparse.ArgumentParser(
+    description="Create index.html, index.gmi, and gophermap files from README file.")
+parser.add_argument("readme", help="File to work on.", type=Path)
+parser.add_argument('--version', action='version', version='%(prog)s ' + VERSION)
+parser.add_argument("--force", "-f", help="Overwrite the output files.", action='store_true')
+parser.add_argument("--print-gopher", help="Write the Gophermap file to stdout", action='store_true')
+parser.add_argument("--print-gemini", help="Write the Gemini index file to stdout", action='store_true')
+parser.add_argument("--print-html", help="Write the HTML index file to stdout", action='store_true')
+
+def contains_gopher_illegal(value):
+    for ch in value:
+        if not ch.isprintable() or ch.isspace():
+            return True
+    return False
+
+def gopherFileType(name):
+    if isinstance(name, Path):
+        suffix = name.suffix
+        name = name.stem
+    else:
+        path = Path(name)
+        suffix = path.suffix
+        if not suffix:
+            if path.name == name and '.' not in name:
+                suffix = '.' + name
+            elif path.name and path.name[0] == '.':
+                suffix = path.name
+    if suffix and suffix[0] != '.':
+        suffix = '.' + suffix
+    if not suffix:
+        return '0'
+    elif suffix in ('.txt','.ly','.song','.mma','.sh','.js','.json','.md','.rst','.mdown','.nfo'):
+        return '0'
+    elif suffix in ('.mp3','.flac','.ogg','.wav','.midi','.mid','.kar','.spx'):
+        return 's'
+    elif suffix == '.gif' or suffix.endswith('.gif'):
+        return 'g'
+    elif suffix in ('.png', '.jpg', '.jpeg','.tiff','.tif'):
+        return 'I'
+    elif suffix in ('.docx', '.epub', '.rtf','.doc'):
+        return '9'
+    elif suffix in ('.html', '.htm'):
+        return 'h'
+    elif name.lower().startswith('read') or name.lower() == 'file_id.diz' or name == 'index.gmi':
+        return '0'
+    else:
+        return '9'
+
+def main(args):
+    infodict = {}
+    for entry in args.readme.parent.glob('*'):
+        if entry.name.startswith('.'):
+            continue
+        value = name = entry.name
+        if entry.is_symlink():
+            entry = entry.parent / entry.resolve().name
+            if not entry.exists() or entry.is_symlink():
+                continue
+            value = entry.name
+        gophertype = None
+        if entry.is_dir():
+            gophertype = '1'
+        elif entry.is_file():
+            gophertype = '0'
+        if gophertype is None or contains_gopher_illegal(value):
+            continue
+        infodict[name] = (gophertype, value)
+
+    gemini = []
+    html = []
+    pre_block = []
+    gophermap = []
+    body_class = "plain"
+    if body_class:
+        html.append(f'<body class="{body_class}">\n')
+    else:
+        html.append(f'<body>\n')
+    title = None
+
+    for line in args.readme.read_text().splitlines():
+        line = line.expandtabs()
+        if line.startswith('.'):
+            pre_block.append(line[1:])
+            gophermap.append(line)
+            gemini.append(line)
+            continue
+        elif pre_block:
+            pre_text = "\n".join(pre_block)
+            html.append(f'<pre>{pre_text}</pre>\n')
+            pre_block = []
+        words = line.strip().split()
+        if not words:
+            html.append('&nbsp;<br/>\n')
+            gophermap.append('')
+            gemini.append('')
+            continue
+        found = None
+        for word in words[:3]:
+            newword = []
+            in_word = False
+            for ch in word:
+                if in_word:
+                    newword.append(ch)
+                elif ch.isalnum():
+                    in_word = True
+                    newword.append(ch)
+            if not in_word:
+                continue
+            newword.reverse()
+            oldword = newword
+            newword = []
+            in_word = False
+            for ch in oldword:
+                if in_word:
+                    newword.append(ch)
+                elif ch.isalnum():
+                    in_word = True
+                    newword.append(ch)
+            if in_word:
+                newword.reverse()
+                found = ''.join(newword)
+                break
+        gophertype = None
+        value = '#'
+        if found:
+            gophertype, value = infodict.get(found, (None,found))
+            if title is None and line.strip()[0].isalnum():
+                title = line.strip()
+                if len(title) > MAX_TITLE_LENGTH:
+                    title = f'{title[:MAX_TITLE_LENGTH-3]}...'
+        if not found or gophertype is None:
+            gophermap.append(line)
+            gemini.append(line)
+            idx = 0
+            while idx < len(line) and line[idx].isspace():
+                idx += 1
+            if idx > 0:
+                html.append('&nbsp;' * idx)
+                html.append(line[idx:])
+            else:
+                html.append(line)
+            html.append('<br/>\n')
+        else:
+            startidx = line.find(found)
+            beginning = line[0:startidx]
+            endidx = startidx + len(found)
+            ending = ''
+            if endidx + 1 < len(line):
+                ending = line[endidx:]
+            html.append(beginning.replace(' ', '&nbsp;'))
+            html.append(f'<a href="{value}">{found}</a>')
+            html.append(ending)
+            html.append('<br/>\n')
+            gemini.append(f'=> {value}\t{line}')
+            if gophertype == '0':
+                gophertype = gopherFileType(value)
+            gophermap.append(f'{gophertype}{line}\t{value}')
+    html.append('\n</body>')
+    body = ''.join(html)
+    if not title:
+        title = str(args.readme)
+    html = f'''
+            <html>
+            <head><title>{title}</title>
+            ''' '''
+            <style>
+            .plain * {
+                 margin: unset;
+            }
+            </style>
+            ''' f'''
+            </head>
+            {body}
+            </html>
+            '''
+    if args.print_gopher:
+        print('### Gophermap')
+        print('\n'.join(gophermap))
+        print('\n----\n')
+    outfile = args.readme.parent / 'gophermap'
+    if not outfile.exists() or args.force:
+        if gophermap[-1] != '':
+            gophermap.append('')
+        outfile.write_text('\n'.join(gophermap))
+    if args.print_gemini:
+        print('### Gemini')
+        print('\n'.join(gemini))
+        print('\n----\n')
+    outfile = args.readme.parent / 'index.gmi'
+    if not outfile.exists() or args.force:
+        if gemini[-1] != '':
+            gemini.append('')
+        outfile.write_text('\n'.join(gemini))
+    if args.print_html:
+        print('### HTML')
+        print(html)
+        print('\n----\n')
+    outfile = args.readme.parent / 'index.html'
+    if not outfile.exists() or args.force:
+        if gemini[-1] != '':
+            gemini.append('')
+        outfile.write_text(html)
+
+
+
+if __name__ == "__main__":
+    main(parser.parse_args())
+

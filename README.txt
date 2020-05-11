@@ -1,0 +1,98 @@
+
+.  ____                _ __  __        _   _
+. |  _ \ ___  __ _  __| |  \/  | ___  | \ | | _____      __
+. | |_) / _ \/ _` |/ _` | |\/| |/ _ \ |  \| |/ _ \ \ /\ / /
+. |  _ <  __/ (_| | (_| | |  | |  __/_| |\  | (_) \ V  V /
+. |_| \_\___|\__,_|\__,_|_|  |_|\___(_)_| \_|\___/ \_/\_/
+
+Generate index pages from readme files.
+
+
+Contents
+========
+
+readme.now : Python 3 script
+READ.ME : sample README file
+index.html : HTML output from the sample
+index.gmi : Gemini output from the sample
+gophermap : Gopher output from the sample
+
+
+Usage
+=====
+
+. usage: readme.now [-h] [--force] [--print-gopher] [--print-gemini]
+.                   [--print-html]
+.                   readme
+.
+. Create index.html, index.gmi, and gophermap files from README file.
+.
+. positional arguments:
+.   readme          File to work on.
+.
+. optional arguments:
+.   -h, --help      show this help message and exit
+.   --version       show program's version number and exit
+.   --force, -f     Overwrite the output files.
+.   --print-gopher  Write the Gophermap file to stdout
+.   --print-gemini  Write the Gemini index file to stdout
+.   --print-html    Write the HTML index file to stdout
+
+
+File format
+===========
+
+Normal text:
+
+    Normal text does not wrap. This isn't Markdown, and no paragraphs
+    are parsed. In Gophermaps and Gemini index files, text does not wrap,
+    and it is easy enough to make that work for HTML, too.
+
+    HTML does not have files that are completely preformatted. That's
+    all, really.
+
+Preformatted lines:
+
+    Lines that start with '.' indicate a preformatted line, sequential
+    preformatted lines get bundled up in to the same preformatted block.
+
+Indented lines:
+
+    Indented lines are displayed in HTML in a matter that should work
+    for ancient systems that don't support advanced CSS. This will work
+    even though much of the line will not be preformatted.
+
+    The secret: We convert leading spaces to NBSP in the HTML.
+
+Linking to files:
+
+    Files need to be at the start of the line to be processed properly.
+    In the earlier `Contents` section, you should have already seen this.
+    Here are other examples:
+
+    readme.now
+
+        It should work when indented without trailing space.
+
+    (*). `readme.now`: Overly annotated
+
+        It should work when it is has an unordered list (no numbers), and
+        when quoted however you like.
+
+    Files can't start or end with a period or other punctuation.
+
+    Spaces, tabs, and other unusual characters do not work reliably with
+    Gopher, and will cause the file to be quietly ignored.
+
+HTML Title:
+
+    For the HTML title, we leverage the same technique that web editors
+    use: we pull in a portion of the first text from the file.
+
+    We can safely drop all preformatted blocks in this consideration,
+    as well as any lines without alphanumeric words.
+
+    We don't use the full line, but it works best if the first line
+    is either the name of the folder or a short description of the
+    folder.
+

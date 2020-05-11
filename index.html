@@ -1,0 +1,114 @@
+
+            <html>
+            <head><title>Generate index pages from readme files.</title>
+            
+            <style>
+            .plain * {
+                 margin: unset;
+            }
+            </style>
+            
+            </head>
+            <body class="plain">
+&nbsp;<br/>
+<pre>  ____                _ __  __        _   _
+ |  _ \ ___  __ _  __| |  \/  | ___  | \ | | _____      __
+ | |_) / _ \/ _` |/ _` | |\/| |/ _ \ |  \| |/ _ \ \ /\ / /
+ |  _ <  __/ (_| | (_| | |  | |  __/_| |\  | (_) \ V  V /
+ |_| \_\___|\__,_|\__,_|_|  |_|\___(_)_| \_|\___/ \_/\_/</pre>
+&nbsp;<br/>
+Generate index pages from readme files.<br/>
+&nbsp;<br/>
+&nbsp;<br/>
+Contents<br/>
+========<br/>
+&nbsp;<br/>
+<a href="readme.now">readme.now</a> : Python 3 script<br/>
+<a href="READ.ME">READ.ME</a> : sample README file<br/>
+<a href="index.html">index.html</a> : HTML output from the sample<br/>
+<a href="index.gmi">index.gmi</a> : Gemini output from the sample<br/>
+<a href="gophermap">gophermap</a> : Gopher output from the sample<br/>
+&nbsp;<br/>
+&nbsp;<br/>
+Usage<br/>
+=====<br/>
+&nbsp;<br/>
+<pre> usage: readme.now [-h] [--force] [--print-gopher] [--print-gemini]
+                   [--print-html]
+                   readme
+
+ Create index.html, index.gmi, and gophermap files from README file.
+
+ positional arguments:
+   readme          File to work on.
+
+ optional arguments:
+   -h, --help      show this help message and exit
+   --version       show program's version number and exit
+   --force, -f     Overwrite the output files.
+   --print-gopher  Write the Gophermap file to stdout
+   --print-gemini  Write the Gemini index file to stdout
+   --print-html    Write the HTML index file to stdout</pre>
+&nbsp;<br/>
+&nbsp;<br/>
+File format<br/>
+===========<br/>
+&nbsp;<br/>
+Normal text:<br/>
+&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;Normal text does not wrap. This isn't Markdown, and no paragraphs<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;are parsed. In Gophermaps and Gemini index files, text does not wrap,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;and it is easy enough to make that work for HTML, too.<br/>
+&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;HTML does not have files that are completely preformatted. That's<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;all, really.<br/>
+&nbsp;<br/>
+Preformatted lines:<br/>
+&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;Lines that start with '.' indicate a preformatted line, sequential<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;preformatted lines get bundled up in to the same preformatted block.<br/>
+&nbsp;<br/>
+Indented lines:<br/>
+&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;Indented lines are displayed in HTML in a matter that should work<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;for ancient systems that don't support advanced CSS. This will work<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;even though much of the line will not be preformatted.<br/>
+&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;The secret: We convert leading spaces to NBSP in the HTML.<br/>
+&nbsp;<br/>
+Linking to files:<br/>
+&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;Files need to be at the start of the line to be processed properly.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;In the earlier `Contents` section, you should have already seen this.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;Here are other examples:<br/>
+&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="readme.now">readme.now</a><br/>
+&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;It should work when indented without trailing space.<br/>
+&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(*).&nbsp;`<a href="readme.now">readme.now</a>`: Overly annotated<br/>
+&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;It should work when it is has an unordered list (no numbers), and<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;when quoted however you like.<br/>
+&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;Files can't start or end with a period or other punctuation.<br/>
+&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;Spaces, tabs, and other unusual characters do not work reliably with<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;Gopher, and will cause the file to be quietly ignored.<br/>
+&nbsp;<br/>
+HTML Title:<br/>
+&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;For the HTML title, we leverage the same technique that web editors<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;use: we pull in a portion of the first text from the file.<br/>
+&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;We can safely drop all preformatted blocks in this consideration,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;as well as any lines without alphanumeric words.<br/>
+&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;We don't use the full line, but it works best if the first line<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;is either the name of the folder or a short description of the<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;folder.<br/>
+&nbsp;<br/>
+
+</body>
+            </html>
+            

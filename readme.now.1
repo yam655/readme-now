@@ -1,0 +1,33 @@
+.TH README.NOW 1 2020-05-10 yam655.com "Misc. Tilde Commands"
+.SH NAME
+readme.now \- Generate index pages from readme files.
+.SH SYNOPSIS
+.B readme.now [-h] [-f] 
+.I README
+.SH DESCRIPTION
+.PP
+Create index.html, gophermap, and index.gmi files from
+.I README
+file using super light-weight formatting.
+.SH OPTIONS
+.IP "-h, --help"
+Show this help message and exit.
+.IP "-f, --force"
+Overwrite the output files.
+.IP --print-gopher
+Write the Gophermap file to stdout.
+.IP --print-gemini
+Write the Gemini index file to stdout
+.IP --print-html
+Write the HTML index file to stdout
+.SH FILES
+.I readme.now
+files
+.RS
+README input files for the
+.I readme.now
+program. See
+.BR readme.now (5)
+for further details.
+.RE
+

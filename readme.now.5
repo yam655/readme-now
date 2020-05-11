@@ -1,0 +1,45 @@
+.TH README.NOW 5 2020-05-10 yam655.com "Misc. Tilde Commands"
+.SH NAME
+readme.now \- Format of readme.now README files.
+.SH FILE FORMAT
+.IP "Normal text:"
+Normal text does not wrap. This isn\[aq]t Markdown, and no paragraphs
+are parsed. In Gophermaps and Gemini index files, text does not wrap,
+and it is easy enough to make that work for HTML, too.
+.IP
+HTML does not have files that are completely preformatted. That\[aq]s
+all, really.
+.IP "Preformatted lines:"
+Lines that start with \[aq].\[aq] (Period) indicate a preformatted line, sequential
+preformatted lines get bundled up in to the same preformatted block.
+.IP "Indented lines:"
+Indented lines are displayed in HTML in a matter that should work
+for ancient systems that don\[aq]t support advanced CSS. This will work
+even though much of the line will not be preformatted.
+.IP
+The secret: We convert leading spaces to NBSP in the HTML.
+.IP "Linking to files:"
+Only HTML allows links at arbitrary locations within a file, as
+both Gemini and Gopher require links specified at the beginning
+of the line. To simplify things, filenames need to be at the
+start of the line to be heated in to links properly.
+.IP
+Heating of links should work when indented, and when they're
+alone on the line. It should also work when it is has an
+indications that it is an unordered list (no numbers), and
+you may quote it however you like.
+.IP
+Files can\[aq]t start or end with a period or other punctuation.
+Spaces, tabs, and other unusual characters do not work reliably will
+cause the file to be quietly ignored.
+.IP "HTML Title:"
+For the HTML title, we leverage the same technique that web editors
+use: we pull in a portion of the first text from the file.
+.IP
+We can safely drop all preformatted blocks in this consideration,
+as well as any lines without alphanumeric words.
+.IP
+We don\[aq]t use the full line, but it works best if the first line
+is either the name of the folder or a short description.
+
+
