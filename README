@@ -12,7 +12,7 @@ Contents
 ========
 
 readme.now : Python 3 script
-READ.ME : sample README file
+README : sample README file
 index.html : HTML output from the sample
 index.gmi : Gemini output from the sample
 gophermap : Gopher output from the sample
